@@ -1,9 +1,66 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Advanced To-Do List</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Advanced To-Do List App</title>
+
+    <style>
+        body{
+            font-family: Arial, sans-serif;
+            background:#f4f4f4;
+            text-align:center;
+            padding:20px;
+        }
+
+        h1{
+            color:#0077b6;
+        }
+
+        input, select, button{
+            padding:10px;
+            margin:5px;
+        }
+
+        ul{
+            padding:0;
+        }
+
+        li{
+            list-style:none;
+            background:white;
+            margin:10px auto;
+            padding:15px;
+            width:80%;
+            border-radius:8px;
+            box-shadow:0 0 5px rgba(0,0,0,0.1);
+        }
+
+        .completed{
+            text-decoration:line-through;
+            color:gray;
+        }
+
+        .high{
+            border-left:5px solid red;
+        }
+
+        .medium{
+            border-left:5px solid orange;
+        }
+
+        .low{
+            border-left:5px solid green;
+        }
+
+        button{
+            background:#0077b6;
+            color:white;
+            border:none;
+            border-radius:5px;
+            cursor:pointer;
+        }
+    </style>
 </head>
+
 <body>
 
 <h1>To-Do List App</h1>
@@ -22,7 +79,133 @@
 
 <ul id="taskList"></ul>
 
-<script src="script.js"></script>
+<script>
+
+let tasks = JSON.parse(localStorage.getItem("tasks")) || [
+{
+title:"Complete CodSoft To-Do List App",
+priority:"High",
+dueDate:"2026-06-20",
+completed:false
+},
+{
+title:"Study Java Programming",
+priority:"Medium",
+dueDate:"2026-06-25",
+completed:false
+},
+{
+title:"Prepare Resume",
+priority:"High",
+dueDate:"2026-06-18",
+completed:true
+},
+{
+title:"Practice Web Development",
+priority:"Medium",
+dueDate:"2026-06-30",
+completed:false
+},
+{
+title:"Upload Project on GitHub",
+priority:"Low",
+dueDate:"2026-06-22",
+completed:false
+}
+];
+
+function saveTasks(){
+    localStorage.setItem("tasks", JSON.stringify(tasks));
+}
+
+function displayTasks(){
+
+    let taskList = document.getElementById("taskList");
+    taskList.innerHTML = "";
+
+    tasks.forEach((task,index)=>{
+
+        let li = document.createElement("li");
+
+        li.classList.add(task.priority.toLowerCase());
+
+        if(task.completed){
+            li.classList.add("completed");
+        }
+
+        li.innerHTML = `
+        <strong>${task.title}</strong><br>
+        Priority: ${task.priority}<br>
+        Due Date: ${task.dueDate}<br><br>
+
+        <button onclick="toggleComplete(${index})">
+        ${task.completed ? "Undo" : "Complete"}
+        </button>
+
+        <button onclick="editTask(${index})">
+        Edit
+        </button>
+
+        <button onclick="deleteTask(${index})">
+        Delete
+        </button>
+        `;
+
+        taskList.appendChild(li);
+
+    });
+}
+
+function addTask(){
+
+    let title = document.getElementById("taskInput").value;
+    let priority = document.getElementById("priority").value;
+    let dueDate = document.getElementById("dueDate").value;
+
+    if(title==="") return;
+
+    tasks.push({
+        title,
+        priority,
+        dueDate,
+        completed:false
+    });
+
+    saveTasks();
+    displayTasks();
+
+    document.getElementById("taskInput").value="";
+}
+
+function deleteTask(index){
+    tasks.splice(index,1);
+    saveTasks();
+    displayTasks();
+}
+
+function toggleComplete(index){
+    tasks[index].completed=!tasks[index].completed;
+    saveTasks();
+    displayTasks();
+}
+
+function editTask(index){
+
+    let newTitle = prompt(
+        "Edit Task",
+        tasks[index].title
+    );
+
+    if(newTitle){
+        tasks[index].title = newTitle;
+        saveTasks();
+        displayTasks();
+    }
+}
+
+displayTasks();
+
+</script>
 
 </body>
 </html>
